@@ -1,4 +1,5 @@
 "use strict";
+//import StealthPlugin from "puppeteer-extra-plugin-stealth";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,77 +36,206 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express = require("express");
-var puppeteer = require("puppeteer");
-var app = express();
+var express_1 = __importDefault(require("express"));
+var puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
+var puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
+var axios_1 = __importDefault(require("axios"));
+puppeteer_extra_1.default.use((0, puppeteer_extra_plugin_stealth_1.default)());
+var chromeLauncher = require("chrome-launcher");
+/* const Xvfb = require("xvfb");
+
+const xvfb = new Xvfb();
+xvfb.startSync(); */
+var app = (0, express_1.default)();
 var port = 3000;
+var chromeConfig = {
+    chromePath: "/usr/bin/google-chrome-stable",
+};
 var page;
 var times = 0;
-var size = "44";
+var size = "40";
 var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var browser;
+    var chrome, response, webSocketDebuggerUrl, browser, client;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, puppeteer.launch({
-                    headless: false,
-                })];
+            case 0: return [4 /*yield*/, chromeLauncher.killAll()];
             case 1:
-                browser = _a.sent();
-                return [4 /*yield*/, browser.newPage()];
-            case 2:
-                page = _a.sent();
-                return [4 /*yield*/, page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.88 Safari/537.36")];
-            case 3:
                 _a.sent();
-                //login();
-                checkProduct();
+                return [4 /*yield*/, chromeLauncher.launch({
+                        startingUrl: "https://www.zalando.it",
+                        //userDataDir: false,
+                        //chromeFlags: ["--headless", "--disable-gpu"],
+                    })];
+            case 2:
+                chrome = _a.sent();
+                return [4 /*yield*/, axios_1.default.get("http://localhost:" + chrome.port + "/json/version")];
+            case 3:
+                response = _a.sent();
+                webSocketDebuggerUrl = response.data.webSocketDebuggerUrl;
+                return [4 /*yield*/, puppeteer_extra_1.default.connect({
+                        browserWSEndpoint: webSocketDebuggerUrl,
+                    })];
+            case 4:
+                browser = _a.sent();
+                return [4 /*yield*/, browser.pages()];
+            case 5:
+                page = (_a.sent())[0];
+                return [4 /*yield*/, page.target().createCDPSession()];
+            case 6:
+                client = _a.sent();
+                return [4 /*yield*/, client.send("Network.clearBrowserCookies")];
+            case 7:
+                _a.sent();
+                return [4 /*yield*/, client.send("Network.clearBrowserCache")];
+            case 8:
+                _a.sent();
+                /*await page.setUserAgent(
+                  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/60.0.3112.50 Safari/537.36"
+                );*/
+                //setTimeout(async () => {
+                //googleLogin();
+                /* await page.waitForSelector('a[title="Accedi"]');
+                await page.click('a[title="Accedi"]');
+                await page.goto("https://www.zalando.it");
+                await page.waitForSelector('a[title="Accedi"]'); */
+                return [4 /*yield*/, page.goto("https://www.zalando.it/test")];
+            case 9:
+                /*await page.setUserAgent(
+                  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/60.0.3112.50 Safari/537.36"
+                );*/
+                //setTimeout(async () => {
+                //googleLogin();
+                /* await page.waitForSelector('a[title="Accedi"]');
+                await page.click('a[title="Accedi"]');
+                await page.goto("https://www.zalando.it");
+                await page.waitForSelector('a[title="Accedi"]'); */
+                _a.sent();
+                return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html")];
+            case 10:
+                _a.sent();
+                return [4 /*yield*/, page.goto("https://www.zalando.it")];
+            case 11:
+                _a.sent();
+                setTimeout(function () {
+                    zalandoLogin();
+                }, 5000);
                 return [2 /*return*/];
         }
     });
 }); };
-var login = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var USERNAME, PASSWORD, error_1;
+var googleLogin = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 8]);
-                return [4 /*yield*/, page.goto("https://accounts.zalando.com/authenticate?sales_channel=ebf57ebf-e26d-4ebd-8009-6ad519073d2a&request=eyJjbGllbnRfaWQiOiJmYXNoaW9uLXN0b3JlLXdlYiIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwic2NvcGVzIjpbIm9wZW5pZCJdLCJyZWRpcmVjdF91cmkiOiJodHRwczovL3d3dy56YWxhbmRvLml0L3Nzby9jYWxsYmFjayIsInN0YXRlIjoiZXlKdmNtbG5hVzVoYkY5eVpYRjFaWE4wWDNWeWFTSTZJbWgwZEhCek9pOHZkM2QzTG5waGJHRnVaRzh1YVhRdmJYbGhZMk52ZFc1MEx5SXNJblJ6SWpvaU1qQXlNaTB4TUMwek1WUXlNam94TXpveE9Gb2lmUT09Iiwibm9uY2UiOiIwZWU4MWRkZC00ZTc0LTQ0OTktYTI2Ni1hNDcyMjYwYThhOGQiLCJ1aV9sb2NhbGVzIjpbIml0LUlUIl0sInJlcXVlc3RfaWQiOiJaYzZCbVZXUmQ2UUZPbEhHOjc1ZWU0ZmJmLWNhZGUtNDY4OC1iMmI4LWQyNDA4YzBkYzYzNTpGUXF0eEVXUC00TFdheTVWIiwiZiI6dHJ1ZX0=&ui_locales=it-IT&passwordMeterFT=true")];
+                _a.trys.push([0, 5, , 6]);
+                return [4 /*yield*/, page.goto("https://accounts.google.com/ServiceLogin?hl=it&amp;passive=true&amp;continue=https://www.google.it/&amp;ec=GAZAmgQ")];
             case 1:
                 _a.sent();
-                USERNAME = "micheletornello5@gmail.com";
+                return [4 /*yield*/, page.type('input[type="email"]', "micheletornello10@gmail.com")];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, page.keyboard.press("Enter")];
+            case 3:
+                _a.sent();
+                return [4 /*yield*/, page.waitForNavigation()];
+            case 4:
+                _a.sent();
+                setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: 
+                            //await page.waitForSelector('input[type="password"]');
+                            return [4 /*yield*/, page.type('input[type="password"]', "Mm5102001")];
+                            case 1:
+                                //await page.waitForSelector('input[type="password"]');
+                                _a.sent();
+                                return [4 /*yield*/, page.keyboard.press("Enter")];
+                            case 2:
+                                _a.sent();
+                                return [4 /*yield*/, page.waitForNavigation()];
+                            case 3:
+                                _a.sent();
+                                zalandoLogin();
+                                return [2 /*return*/];
+                        }
+                    });
+                }); }, 5000);
+                return [3 /*break*/, 6];
+            case 5:
+                error_1 = _a.sent();
+                console.log(error_1);
+                return [3 /*break*/, 6];
+            case 6: return [2 /*return*/];
+        }
+    });
+}); };
+var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var USERNAME_1, PASSWORD, error_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 4, , 5]);
+                return [4 /*yield*/, page.goto("https://www.zalando.it/myaccount")];
+            case 1:
+                _a.sent();
+                USERNAME_1 = "micheletornello5@gmail.com";
                 PASSWORD = "zMm5102001";
                 return [4 /*yield*/, page.waitForSelector('input[id="login.email"]')];
             case 2:
                 _a.sent();
-                return [4 /*yield*/, page.type('input[id="login.email"]', USERNAME)];
+                //await page.type('input[id="login.email"]', USERNAME);
+                //await page.type('input[id="login.secret"]', PASSWORD);
+                Array.from(USERNAME_1).map(function (letter, i) {
+                    return setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, page.type('input[id="login.email"]', letter)];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    }); }); }, i * 200);
+                });
+                Array.from(PASSWORD).map(function (letter, i) {
+                    return setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, page.type('input[id="login.secret"]', letter)];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    }); }); }, Array.from(USERNAME_1).length * 200 + i * 200);
+                });
+                setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, page.keyboard.press("Enter")];
+                            case 1:
+                                _a.sent();
+                                console.log("LOGIN WAITING...");
+                                return [2 /*return*/];
+                        }
+                    });
+                }); }, Array.from(USERNAME_1).length * 200 + Array.from(PASSWORD).length * 200 + 2000);
+                return [4 /*yield*/, page.waitForNavigation()];
             case 3:
                 _a.sent();
-                return [4 /*yield*/, page.type('input[id="login.secret"]', PASSWORD)];
-            case 4:
-                _a.sent();
-                return [4 /*yield*/, page.keyboard.press("Enter")];
-            case 5:
-                _a.sent();
-                return [4 /*yield*/, page.waitForNavigation()];
-            case 6:
-                _a.sent();
                 checkProduct();
-                return [3 /*break*/, 8];
-            case 7:
-                error_1 = _a.sent();
-                console.log(error_1);
-                return [3 /*break*/, 8];
-            case 8: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 4:
+                error_2 = _a.sent();
+                console.log(error_2);
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
 var checkProduct = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var productsCheck, cleanProducts, error_2;
+    var productsCheck, cleanProducts, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 10, , 11]);
+                _a.trys.push([0, 11, , 12]);
                 return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html")];
             case 1:
                 _a.sent();
@@ -120,37 +250,40 @@ var checkProduct = function () { return __awaiter(void 0, void 0, void 0, functi
                 _a.sent();
                 return [4 /*yield*/, page.$$eval('form[name="size-picker-form"] label', function (options) {
                         return options.map(function (option) {
-                            var _a;
                             var spans = Array.from(option.querySelectorAll("span"));
-                            //const size = times < 10 ? "44" : "40";
-                            return spans.find(function (span) { return span.textContent === "44"; })
-                                ? ((_a = option.textContent) === null || _a === void 0 ? void 0 : _a.includes("Esaurito"))
-                                    ? "esaurito"
-                                    : option.htmlFor
-                                : "non trovato";
+                            spans[0].textContent = option.htmlFor;
+                            return spans.map(function (span) { return span.textContent; });
                         });
                     })];
             case 5:
                 productsCheck = _a.sent();
-                cleanProducts = productsCheck.filter(function (product) { return product !== "esaurito" && product !== "non trovato"; });
-                if (!cleanProducts.length) return [3 /*break*/, 8];
+                cleanProducts = productsCheck
+                    .filter(function (product) {
+                    return product[1] === size && !product.find(function (p) { return p === "Esaurito"; });
+                })
+                    .flat();
+                console.log("CLEAN PRODUCTS: ", cleanProducts);
+                if (!cleanProducts.length) return [3 /*break*/, 9];
                 return [4 /*yield*/, page.click("label[for=\"" + cleanProducts[0] + "\"]")];
             case 6:
                 _a.sent();
                 return [4 /*yield*/, page.click('div[data-testid="pdp-add-to-cart"] button')];
             case 7:
                 _a.sent();
-                return [3 /*break*/, 9];
+                return [4 /*yield*/, page.waitForNavigation()];
             case 8:
+                _a.sent();
+                return [3 /*break*/, 10];
+            case 9:
                 console.log("NOT FOUND - Reload");
                 checkProduct();
-                _a.label = 9;
-            case 9: return [3 /*break*/, 11];
-            case 10:
-                error_2 = _a.sent();
-                console.log(error_2);
-                return [3 /*break*/, 11];
-            case 11: return [2 /*return*/];
+                _a.label = 10;
+            case 10: return [3 /*break*/, 12];
+            case 11:
+                error_3 = _a.sent();
+                console.log(error_3);
+                return [3 /*break*/, 12];
+            case 12: return [2 /*return*/];
         }
     });
 }); };
