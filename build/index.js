@@ -43,7 +43,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 var puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
-var axios_1 = __importDefault(require("axios"));
+//import chromeLauncher from "chrome-launcher";
+var puppeteer_1 = require("puppeteer");
 puppeteer_extra_1.default.use((0, puppeteer_extra_plugin_stealth_1.default)());
 var chromeLauncher = require("chrome-launcher");
 /* const Xvfb = require("xvfb");
@@ -59,70 +60,50 @@ var page;
 var times = 0;
 var size = "40";
 var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var chrome, response, webSocketDebuggerUrl, browser, client;
+    var browser;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, chromeLauncher.killAll()];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, chromeLauncher.launch({
-                        startingUrl: "https://www.zalando.it",
-                        //userDataDir: false,
-                        //chromeFlags: ["--headless", "--disable-gpu"],
+                return [4 /*yield*/, puppeteer_extra_1.default.launch({
+                        //args: ["--no-sandbox"],
+                        //ignoreDefaultArgs: ["--enable-automation"],
+                        headless: false,
+                        product: "chrome",
+                        executablePath: (0, puppeteer_1.executablePath)(),
                     })];
             case 2:
-                chrome = _a.sent();
-                return [4 /*yield*/, axios_1.default.get("http://localhost:" + chrome.port + "/json/version")];
-            case 3:
-                response = _a.sent();
-                webSocketDebuggerUrl = response.data.webSocketDebuggerUrl;
-                return [4 /*yield*/, puppeteer_extra_1.default.connect({
-                        browserWSEndpoint: webSocketDebuggerUrl,
-                    })];
-            case 4:
                 browser = _a.sent();
                 return [4 /*yield*/, browser.pages()];
-            case 5:
+            case 3:
+                /* const browser = await puppeteer.connect({
+                  browserWSEndpoint: webSocketDebuggerUrl,
+                }); */
                 page = (_a.sent())[0];
-                return [4 /*yield*/, page.target().createCDPSession()];
-            case 6:
-                client = _a.sent();
-                return [4 /*yield*/, client.send("Network.clearBrowserCookies")];
-            case 7:
+                /* const client = await page.target().createCDPSession();
+                await client.send("Network.clearBrowserCookies");
+                await client.send("Network.clearBrowserCache"); */
+                return [4 /*yield*/, page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36")];
+            case 4:
+                /* const client = await page.target().createCDPSession();
+                await client.send("Network.clearBrowserCookies");
+                await client.send("Network.clearBrowserCache"); */
                 _a.sent();
-                return [4 /*yield*/, client.send("Network.clearBrowserCache")];
-            case 8:
-                _a.sent();
-                /*await page.setUserAgent(
-                  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/60.0.3112.50 Safari/537.36"
-                );*/
                 //setTimeout(async () => {
                 //googleLogin();
                 /* await page.waitForSelector('a[title="Accedi"]');
                 await page.click('a[title="Accedi"]');
                 await page.goto("https://www.zalando.it");
                 await page.waitForSelector('a[title="Accedi"]'); */
-                return [4 /*yield*/, page.goto("https://www.zalando.it/test")];
-            case 9:
-                /*await page.setUserAgent(
-                  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/60.0.3112.50 Safari/537.36"
-                );*/
-                //setTimeout(async () => {
-                //googleLogin();
-                /* await page.waitForSelector('a[title="Accedi"]');
-                await page.click('a[title="Accedi"]');
+                /* await page.goto("https://www.zalando.it/" + new Date().getTime());
+                await page.goto(
+                  "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
+                );
                 await page.goto("https://www.zalando.it");
-                await page.waitForSelector('a[title="Accedi"]'); */
-                _a.sent();
-                return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html")];
-            case 10:
-                _a.sent();
-                return [4 /*yield*/, page.goto("https://www.zalando.it")];
-            case 11:
-                _a.sent();
-                setTimeout(function () {
-                    zalandoLogin();
-                }, 5000);
+                await page.waitForSelector("article"); */
+                //await page.click("article a");
+                randomEvent();
                 return [2 /*return*/];
         }
     });
@@ -154,7 +135,7 @@ var googleLogin = function () { return __awaiter(void 0, void 0, void 0, functio
                             case 1:
                                 //await page.waitForSelector('input[type="password"]');
                                 _a.sent();
-                                return [4 /*yield*/, page.keyboard.press("Enter")];
+                                return [4 /*yield*/, page.click('button[data-testid="login_button"]')];
                             case 2:
                                 _a.sent();
                                 return [4 /*yield*/, page.waitForNavigation()];
@@ -174,12 +155,32 @@ var googleLogin = function () { return __awaiter(void 0, void 0, void 0, functio
         }
     });
 }); };
+var randomEvent = function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, page.goto("https://www.zalando.it/uomo-home")];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, page.waitForSelector("article")];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, page.click("article a")];
+            case 3:
+                _a.sent();
+                setTimeout(function () {
+                    zalandoLogin();
+                }, 4000);
+                return [2 /*return*/];
+        }
+    });
+}); };
 var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var USERNAME_1, PASSWORD, error_2;
+    var USERNAME_1, PASSWORD, typeTimeout, error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 4, , 5]);
+                _a.trys.push([0, 3, , 4]);
+                console.log("LOGIN");
                 return [4 /*yield*/, page.goto("https://www.zalando.it/myaccount")];
             case 1:
                 _a.sent();
@@ -188,8 +189,7 @@ var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, functi
                 return [4 /*yield*/, page.waitForSelector('input[id="login.email"]')];
             case 2:
                 _a.sent();
-                //await page.type('input[id="login.email"]', USERNAME);
-                //await page.type('input[id="login.secret"]', PASSWORD);
+                typeTimeout = Array.from(USERNAME_1).length * 200 + Array.from(PASSWORD).length * 200;
                 Array.from(USERNAME_1).map(function (letter, i) {
                     return setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -213,41 +213,49 @@ var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, functi
                             case 1:
                                 _a.sent();
                                 console.log("LOGIN WAITING...");
+                                setTimeout(function () { return __awaiter(void 0, void 0, void 0, function () {
+                                    return __generator(this, function (_a) {
+                                        switch (_a.label) {
+                                            case 0: return [4 /*yield*/, page.url().includes("https://www.zalando.it/myaccount")];
+                                            case 1:
+                                                (_a.sent())
+                                                    ? checkProduct()
+                                                    : randomEvent();
+                                                return [2 /*return*/];
+                                        }
+                                    });
+                                }); }, 4000);
                                 return [2 /*return*/];
                         }
                     });
-                }); }, Array.from(USERNAME_1).length * 200 + Array.from(PASSWORD).length * 200 + 2000);
-                return [4 /*yield*/, page.waitForNavigation()];
+                }); }, typeTimeout + 2000);
+                return [3 /*break*/, 4];
             case 3:
-                _a.sent();
-                checkProduct();
-                return [3 /*break*/, 5];
-            case 4:
                 error_2 = _a.sent();
                 console.log(error_2);
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
 var checkProduct = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var productsCheck, cleanProducts, error_3;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var productsCheck, cleanProducts, buyButtonValue, _a, error_3;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                _a.trys.push([0, 11, , 12]);
+                _b.trys.push([0, 14, , 15]);
                 return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html")];
             case 1:
-                _a.sent();
+                _b.sent();
                 return [4 /*yield*/, page.waitForSelector("#picker-trigger")];
             case 2:
-                _a.sent();
+                _b.sent();
                 return [4 /*yield*/, page.click("#picker-trigger")];
             case 3:
-                _a.sent();
+                _b.sent();
                 return [4 /*yield*/, page.waitForSelector('form[name="size-picker-form"]')];
             case 4:
-                _a.sent();
+                _b.sent();
                 return [4 /*yield*/, page.$$eval('form[name="size-picker-form"] label', function (options) {
                         return options.map(function (option) {
                             var spans = Array.from(option.querySelectorAll("span"));
@@ -256,32 +264,106 @@ var checkProduct = function () { return __awaiter(void 0, void 0, void 0, functi
                         });
                     })];
             case 5:
-                productsCheck = _a.sent();
+                productsCheck = _b.sent();
                 cleanProducts = productsCheck
                     .filter(function (product) {
                     return product[1] === size && !product.find(function (p) { return p === "Esaurito"; });
                 })
                     .flat();
                 console.log("CLEAN PRODUCTS: ", cleanProducts);
-                if (!cleanProducts.length) return [3 /*break*/, 9];
-                return [4 /*yield*/, page.click("label[for=\"" + cleanProducts[0] + "\"]")];
+                if (!cleanProducts.length) return [3 /*break*/, 12];
+                return [4 /*yield*/, page.$eval('div[data-testid="pdp-add-to-cart"] button span', function (span) { return span.textContent; })];
             case 6:
-                _a.sent();
-                return [4 /*yield*/, page.click('div[data-testid="pdp-add-to-cart"] button')];
+                buyButtonValue = _b.sent();
+                console.warn("BUY BUTTON VALUE: ", buyButtonValue);
+                return [4 /*yield*/, page.click("label[for=\"".concat(cleanProducts[0], "\"]"))];
             case 7:
-                _a.sent();
-                return [4 /*yield*/, page.waitForNavigation()];
+                _b.sent();
+                return [4 /*yield*/, page.click('div[data-testid="pdp-add-to-cart"] button')];
             case 8:
-                _a.sent();
-                return [3 /*break*/, 10];
+                _b.sent();
+                _a = buyButtonValue === "Aggiungi al carrello";
+                if (!_a) return [3 /*break*/, 10];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/cart/")];
             case 9:
+                _a = (_b.sent());
+                _b.label = 10;
+            case 10:
+                _a;
+                return [4 /*yield*/, page.waitForNavigation()];
+            case 11:
+                _b.sent();
+                buy();
+                return [3 /*break*/, 13];
+            case 12:
                 console.log("NOT FOUND - Reload");
                 checkProduct();
-                _a.label = 10;
+                _b.label = 13;
+            case 13: return [3 /*break*/, 15];
+            case 14:
+                error_3 = _b.sent();
+                console.log(error_3);
+                return [3 /*break*/, 15];
+            case 15: return [2 /*return*/];
+        }
+    });
+}); };
+var goToCart = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var error_4;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, page.goto("https://www.zalando.it/cart/")];
+            case 1:
+                _a.sent();
+                return [3 /*break*/, 3];
+            case 2:
+                error_4 = _a.sent();
+                console.log(error_4);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+var buy = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b, error_5;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _c.trys.push([0, 11, , 12]);
+                return [4 /*yield*/, page.url().includes("/confirm")];
+            case 1:
+                if (!_c.sent()) return [3 /*break*/, 10];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/checkout/address")];
+            case 2:
+                _c.sent();
+                _c.label = 3;
+            case 3:
+                _c.trys.push([3, 5, , 6]);
+                return [4 /*yield*/, page.click('a[class*="deliveryDestinationTab_option_HOME"]')];
+            case 4:
+                _c.sent();
+                return [3 /*break*/, 6];
+            case 5:
+                _a = _c.sent();
+                return [3 /*break*/, 6];
+            case 6:
+                _c.trys.push([6, 9, , 10]);
+                return [4 /*yield*/, page.waitForSelector('button[data-id*="proceedToPayment"]')];
+            case 7:
+                _c.sent();
+                return [4 /*yield*/, page.click('button[data-id*="proceedToPayment"]')];
+            case 8:
+                _c.sent();
+                return [3 /*break*/, 10];
+            case 9:
+                _b = _c.sent();
+                return [3 /*break*/, 10];
             case 10: return [3 /*break*/, 12];
             case 11:
-                error_3 = _a.sent();
-                console.log(error_3);
+                error_5 = _c.sent();
+                console.log(error_5);
                 return [3 /*break*/, 12];
             case 12: return [2 /*return*/];
         }

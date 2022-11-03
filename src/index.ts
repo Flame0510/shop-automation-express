@@ -26,12 +26,16 @@ let page: any;
 
 let times = 0;
 
-let size = "40";
+const size = "40";
+
+const cardNumber = "4502144331007303";
+const cardExp = "1223";
+const cardCVV = "192";
 
 const initialisePuppeteer = async () => {
   await chromeLauncher.killAll();
 
-  const chrome = await chromeLauncher.launch({
+  /* const chrome = await chromeLauncher.launch({
     startingUrl: "https://www.zalando.it",
     //userDataDir: false,
     //chromeFlags: ["--headless", "--disable-gpu"],
@@ -41,29 +45,29 @@ const initialisePuppeteer = async () => {
     `http://localhost:${chrome.port}/json/version`
   );
 
-  const { webSocketDebuggerUrl } = response.data;
+  const { webSocketDebuggerUrl } = response.data; */
 
-  /* const browser = await puppeteer.launch({
-    // args: ["--no-sandbox"],
-    // ignoreDefaultArgs: ["--enable-automation"],
+  const browser = await puppeteer.launch({
+    //args: ["--no-sandbox"],
+    //ignoreDefaultArgs: ["--enable-automation"],
     headless: false,
-    channel: "chrome",
+    product: "chrome",
     executablePath: executablePath(),
-  }); */
-
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: webSocketDebuggerUrl,
   });
+
+  /* const browser = await puppeteer.connect({
+    browserWSEndpoint: webSocketDebuggerUrl,
+  }); */
 
   page = (await browser.pages())[0];
 
-  const client = await page.target().createCDPSession();
+  /* const client = await page.target().createCDPSession();
   await client.send("Network.clearBrowserCookies");
-  await client.send("Network.clearBrowserCache");
+  await client.send("Network.clearBrowserCache"); */
 
-  /*await page.setUserAgent(
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/60.0.3112.50 Safari/537.36"
-  );*/
+  await page.setUserAgent(
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+  );
 
   //setTimeout(async () => {
   //googleLogin();
@@ -72,15 +76,15 @@ const initialisePuppeteer = async () => {
   await page.goto("https://www.zalando.it");
   await page.waitForSelector('a[title="Accedi"]'); */
 
-  await page.goto("https://www.zalando.it/test");
+  /* await page.goto("https://www.zalando.it/" + new Date().getTime());
   await page.goto(
     "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
   );
   await page.goto("https://www.zalando.it");
+  await page.waitForSelector("article"); */
+  //await page.click("article a");
 
-  setTimeout(() => {
-    zalandoLogin();
-  }, 5000);
+  randomEvent();
 
   /* await page.type('input[id="login.email"]', USERNAME);
     await page.type('input[id="login.secret"]', PASSWORD); */
@@ -101,7 +105,8 @@ const googleLogin = async () => {
     setTimeout(async () => {
       //await page.waitForSelector('input[type="password"]');
       await page.type('input[type="password"]', "Mm5102001");
-      await page.keyboard.press("Enter");
+
+      await page.click('button[data-testid="login_button"]');
 
       await page.waitForNavigation();
       zalandoLogin();
@@ -111,8 +116,21 @@ const googleLogin = async () => {
   }
 };
 
+const randomEvent = async () => {
+  await page.goto("https://www.zalando.it/uomo-home");
+
+  await page.waitForSelector("article");
+  await page.click("article a");
+
+  setTimeout(() => {
+    zalandoLogin();
+  }, 4000);
+};
+
 const zalandoLogin = async () => {
   try {
+    console.log("LOGIN");
+
     await page.goto("https://www.zalando.it/myaccount");
 
     const USERNAME = "micheletornello5@gmail.com";
@@ -121,6 +139,9 @@ const zalandoLogin = async () => {
     await page.waitForSelector('input[id="login.email"]');
     //await page.type('input[id="login.email"]', USERNAME);
     //await page.type('input[id="login.secret"]', PASSWORD);
+
+    const typeTimeout =
+      Array.from(USERNAME).length * 200 + Array.from(PASSWORD).length * 200;
 
     Array.from(USERNAME).map((letter, i) =>
       setTimeout(
@@ -139,11 +160,13 @@ const zalandoLogin = async () => {
     setTimeout(async () => {
       await page.keyboard.press("Enter");
       console.log("LOGIN WAITING...");
-    }, Array.from(USERNAME).length * 200 + Array.from(PASSWORD).length * 200 + 2000);
 
-    await page.waitForNavigation();
-
-    checkProduct();
+      setTimeout(async () => {
+        (await page.url().includes("https://www.zalando.it/myaccount"))
+          ? checkProduct()
+          : randomEvent();
+      }, 4000);
+    }, typeTimeout + 2000);
   } catch (error) {
     console.log(error);
   }
@@ -183,15 +206,106 @@ const checkProduct = async () => {
     console.log("CLEAN PRODUCTS: ", cleanProducts);
 
     if (cleanProducts.length) {
+      const buyButtonValue = await page.$eval(
+        'div[data-testid="pdp-add-to-cart"] button span',
+        (span: HTMLSpanElement) => span.textContent
+      );
+
+      console.warn("BUY BUTTON VALUE: ", buyButtonValue);
+
       await page.click(`label[for="${cleanProducts[0]}"]`);
       await page.click('div[data-testid="pdp-add-to-cart"] button');
 
+      buyButtonValue === "Aggiungi al carrello" &&
+        (await page.goto("https://www.zalando.it/cart/"));
+
       await page.waitForNavigation();
 
-      //login();
+      buy();
     } else {
       console.log("NOT FOUND - Reload");
       checkProduct();
+    }
+  } catch (error) {
+    console.log(error);
+
+    //(error as string).includes("timeout") && (goToCart(), buy());
+  }
+};
+
+const goToCart = async () => {
+  try {
+    await page.goto("https://www.zalando.it/cart/");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//CHECK PAYMENT ON CONFIRM
+const checkPaymentOnConfirm = async () => {
+  try {
+    await page.$eval('div[class*="pay-token-confirmation', (div: HTMLElement) =>
+      div.dataset.paymentMethodId === "CREDIT_CARD" &&
+      div?.textContent?.includes(cardNumber.substring(cardNumber.length - 4))
+        ? 'div[class*="pay-token-confirmation"] form button[type="submit"]' /* 'button[data-id*="confirmation-buyNow-bottom"]' */
+        : 'div[class*="pay-token-confirmation"] form button[type="submit"]'
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//SELECT CREDIT CARD ON PAYMENT
+const selectCreditCardOnPayment = async () => {
+  try {
+    //SELECT CREDIT CARD PAYMENT
+    await page.click('input[aria-describedby="payment-method-info--cc"]');
+
+    try {
+      //TRY USE EXISTING CREDIT CARD
+      await page.click('input[name="funding-source-payment-card"]');
+    } catch {
+      addNewCreditCard();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//ADD NEW CREDIT CARD
+const addNewCreditCard = async () => {
+  try {
+    await page.click('input[id="NEW_PAYMENT_CARD"]');
+
+    await page.type('input[id="name-on-card-input-field"]', "Michele Tornello");
+    await page.type('input[id="card-number-input-field"]', cardNumber);
+    await page.type('input[id="exp-input-field"]', cardExp);
+    await page.type('input[id="cvv-input-field"]', cardCVV);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const buy = async () => {
+  try {
+    if (await page.url().includes("/confirm")) {
+      await page.click(checkPaymentOnConfirm());
+
+      selectCreditCardOnPayment();
+
+      //PROCEED BUTTON CLICK
+      await page.click('button[class*="z-1-button"]');
+
+      /* await page.goto("https://www.zalando.it/checkout/address");
+
+      try {
+        await page.click('a[class*="deliveryDestinationTab_option_HOME"]');
+      } catch {}
+
+      try {
+        await page.waitForSelector('button[data-id*="proceedToPayment"]');
+        await page.click('button[data-id*="proceedToPayment"]');
+      } catch {} */
     }
   } catch (error) {
     console.log(error);
