@@ -26,7 +26,7 @@ let page: any;
 
 let times = 0;
 
-const size = "40";
+const size = "50.5";
 
 const cardNumber = "4502144331007303";
 const cardExp = "1223";
@@ -48,12 +48,17 @@ const initialisePuppeteer = async () => {
   const { webSocketDebuggerUrl } = response.data; */
 
   const browser = await puppeteer.launch({
-    //args: ["--no-sandbox"],
-    //ignoreDefaultArgs: ["--enable-automation"],
-    headless: false,
+    ignoreDefaultArgs: ["--enable-automation"],
+    args: [
+      "--disable-blink-features=AutomationControlled",
+      "--disable-web-security",
+    ],
+    //headless: false,
     product: "chrome",
     executablePath: executablePath(),
   });
+
+  console.log(await browser.userAgent());
 
   /* const browser = await puppeteer.connect({
     browserWSEndpoint: webSocketDebuggerUrl,
@@ -66,8 +71,11 @@ const initialisePuppeteer = async () => {
   await client.send("Network.clearBrowserCache"); */
 
   await page.setUserAgent(
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+    //"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   );
+
+  console.log(await browser.userAgent());
 
   //setTimeout(async () => {
   //googleLogin();
@@ -117,14 +125,22 @@ const googleLogin = async () => {
 };
 
 const randomEvent = async () => {
-  await page.goto("https://www.zalando.it/uomo-home");
+  try {
+    console.log("RANDOM EVENT");
 
-  await page.waitForSelector("article");
-  await page.click("article a");
+    await page.goto("https://www.zalando.it/uomo-home");
 
-  setTimeout(() => {
-    zalandoLogin();
-  }, 4000);
+    await page.waitForSelector("article");
+    await page.click("article a");
+
+    setTimeout(() => {
+      zalandoLogin();
+    }, 4000);
+  } catch (error) {
+    console.log(error);
+
+    randomEvent();
+  }
 };
 
 const zalandoLogin = async () => {
@@ -141,19 +157,19 @@ const zalandoLogin = async () => {
     //await page.type('input[id="login.secret"]', PASSWORD);
 
     const typeTimeout =
-      Array.from(USERNAME).length * 200 + Array.from(PASSWORD).length * 200;
+      Array.from(USERNAME).length * 100 + Array.from(PASSWORD).length * 100;
 
     Array.from(USERNAME).map((letter, i) =>
       setTimeout(
         async () => await page.type('input[id="login.email"]', letter),
-        i * 200
+        i * 100
       )
     );
 
     Array.from(PASSWORD).map((letter, i) =>
       setTimeout(
         async () => await page.type('input[id="login.secret"]', letter),
-        Array.from(USERNAME).length * 200 + i * 200
+        Array.from(USERNAME).length * 100 + i * 100
       )
     );
 
@@ -165,7 +181,7 @@ const zalandoLogin = async () => {
         (await page.url().includes("https://www.zalando.it/myaccount"))
           ? checkProduct()
           : randomEvent();
-      }, 4000);
+      }, 8000);
     }, typeTimeout + 2000);
   } catch (error) {
     console.log(error);
@@ -174,8 +190,10 @@ const zalandoLogin = async () => {
 
 const checkProduct = async () => {
   try {
+    console.log("CHECK PRODUCT");
+
     await page.goto(
-      "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
+      "https://www.zalando.it/jordan-air-1-zoom-comfort-sneakers-alte-dark-iriswhiteblacksail-joc12n01f-i11.html"
     );
 
     await page.waitForSelector("#picker-trigger");
@@ -227,6 +245,7 @@ const checkProduct = async () => {
       checkProduct();
     }
   } catch (error) {
+    checkProduct();
     console.log(error);
 
     //(error as string).includes("timeout") && (goToCart(), buy());
@@ -244,14 +263,36 @@ const goToCart = async () => {
 //CHECK PAYMENT ON CONFIRM
 const checkPaymentOnConfirm = async () => {
   try {
-    await page.$eval('div[class*="pay-token-confirmation', (div: HTMLElement) =>
-      div.dataset.paymentMethodId === "CREDIT_CARD" &&
-      div?.textContent?.includes(cardNumber.substring(cardNumber.length - 4))
-        ? 'div[class*="pay-token-confirmation"] form button[type="submit"]' /* 'button[data-id*="confirmation-buyNow-bottom"]' */
-        : 'div[class*="pay-token-confirmation"] form button[type="submit"]'
-    );
+    if (await page.url().includes("something-went-wrong")) {
+      checkProduct();
+    } else {
+      await page.waitForSelector('div[class*="pay-token-confirmation');
+      const result = await page.$eval(
+        'div[class*="pay-token-confirmation',
+        ({ dataset: { paymentMethodId }, textContent }: HTMLElement) => ({
+          paymentMethodId,
+          textContent,
+        })
+      );
+
+      console.log(result);
+
+      const { paymentMethodId, textContent } = result;
+
+      const cardNumberLast4 = cardNumber.substring(cardNumber.length - 4);
+
+      await page.click(
+        paymentMethodId === "CREDIT_CARD" &&
+          textContent.includes(cardNumberLast4)
+          ? 'div[class*="pay-token-confirmation"] form button[type="submit"]' // 'button[data-id*="confirmation-buyNow-bottom"]'
+          : 'div[class*="pay-token-confirmation"] form button[type="submit"]'
+      );
+
+      selectCreditCardOnPayment();
+    }
   } catch (error) {
-    console.log(error);
+    buy();
+    console.log("checkPaymentOnConfirm ERROR: ", error);
   }
 };
 
@@ -259,16 +300,29 @@ const checkPaymentOnConfirm = async () => {
 const selectCreditCardOnPayment = async () => {
   try {
     //SELECT CREDIT CARD PAYMENT
-    await page.click('input[aria-describedby="payment-method-info--cc"]');
+    console.log("SELECT CREDIT CARD PAYMENT");
+
+    await page.waitForSelector('label[for="cc"]');
+    await page.click('label[for="cc"]');
 
     try {
       //TRY USE EXISTING CREDIT CARD
-      await page.click('input[name="funding-source-payment-card"]');
+      console.log("TRY USE EXISTING CREDIT CARD");
+
+      await page.waitForSelector(
+        'input[name="funding-source-payment-card"] ~ div label'
+      );
+      await page.click('input[name="funding-source-payment-card"] ~ div label');
+
+      await page.click('button[class*="z-1-button"]');
+
+      checkPaymentOnConfirm();
     } catch {
       addNewCreditCard();
     }
   } catch (error) {
-    console.log(error);
+    checkPaymentOnConfirm();
+    console.log("selectCreditCardOnPayment ERROR: ", error);
   }
 };
 
@@ -282,33 +336,56 @@ const addNewCreditCard = async () => {
     await page.type('input[id="exp-input-field"]', cardExp);
     await page.type('input[id="cvv-input-field"]', cardCVV);
   } catch (error) {
-    console.log(error);
+    console.log("addNewCreditCard ERROR: ", error);
   }
 };
 
 const buy = async () => {
   try {
-    if (await page.url().includes("/confirm")) {
-      await page.click(checkPaymentOnConfirm());
+    console.log("BUY FUNCTION");
 
-      selectCreditCardOnPayment();
+    if (await page.url().includes("/confirm")) {
+      console.log("CONFIRM PAGE");
+
+      checkPaymentOnConfirm();
 
       //PROCEED BUTTON CLICK
-      await page.click('button[class*="z-1-button"]');
+      //await page.click('button[class*="z-1-button"]');
 
-      /* await page.goto("https://www.zalando.it/checkout/address");
+      // await page.goto("https://www.zalando.it/checkout/address");
+    } else if (await page.url().includes("/payment")) {
+      console.log("PAYMENT");
+
+      selectCreditCardOnPayment();
+    } else if (await page.url().includes("/address")) {
+      console.log("ADDRESS");
 
       try {
+        await page.waitForSelector(
+          'a[class*="deliveryDestinationTab_option_HOME"]'
+        );
         await page.click('a[class*="deliveryDestinationTab_option_HOME"]');
-      } catch {}
 
-      try {
         await page.waitForSelector('button[data-id*="proceedToPayment"]');
         await page.click('button[data-id*="proceedToPayment"]');
-      } catch {} */
+
+        buy();
+      } catch (error) {
+        console.log("ADDRESS ERROR", error);
+
+        await page.waitForSelector('button[data-id*="proceedToPayment"]');
+        await page.click('button[data-id*="proceedToPayment"]');
+
+        buy();
+      }
+    } else {
+      setTimeout(() => {
+        buy();
+      }, 1000);
     }
   } catch (error) {
-    console.log(error);
+    buy();
+    console.log("BUY ERROR: ", error);
   }
 };
 
