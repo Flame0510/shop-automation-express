@@ -63,49 +63,52 @@ var cardNumber = "4502144331007303";
 var cardExp = "1223";
 var cardCVV = "192";
 var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var browser, _a, _b, _c, _d;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
+    var browser, _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
             case 0: return [4 /*yield*/, chromeLauncher.killAll()];
             case 1:
-                _e.sent();
+                _c.sent();
                 return [4 /*yield*/, puppeteer_extra_1.default.launch({
-                        ignoreDefaultArgs: ["--enable-automation"],
-                        args: [
-                            "--disable-blink-features=AutomationControlled",
-                            "--disable-web-security",
-                        ],
-                        //headless: false,
+                        //ignoreDefaultArgs: ["--enable-automation"],
+                        //args: ["--disable-blink-features=AutomationControlled"],
+                        headless: false,
                         product: "chrome",
                         executablePath: (0, puppeteer_1.executablePath)(),
                     })];
             case 2:
-                browser = _e.sent();
-                _b = (_a = console).log;
-                return [4 /*yield*/, browser.userAgent()];
-            case 3:
-                _b.apply(_a, [_e.sent()]);
+                browser = _c.sent();
                 return [4 /*yield*/, browser.pages()];
-            case 4:
+            case 3:
                 /* const browser = await puppeteer.connect({
                   browserWSEndpoint: webSocketDebuggerUrl,
                 }); */
-                page = (_e.sent())[0];
+                page = (_c.sent())[0];
+                //screenshotView();
+                /* await page.setExtraHTTPHeaders({
+                  "Accept-Language": "en-US,en;q=0.9",
+                }); */
                 /* const client = await page.target().createCDPSession();
                 await client.send("Network.clearBrowserCookies");
                 await client.send("Network.clearBrowserCache"); */
                 return [4 /*yield*/, page.setUserAgent(
                     //"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36")];
-            case 5:
+            case 4:
+                //screenshotView();
+                /* await page.setExtraHTTPHeaders({
+                  "Accept-Language": "en-US,en;q=0.9",
+                }); */
                 /* const client = await page.target().createCDPSession();
                 await client.send("Network.clearBrowserCookies");
                 await client.send("Network.clearBrowserCache"); */
-                _e.sent();
-                _d = (_c = console).log;
+                _c.sent();
+                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+                _b = (_a = console).log;
                 return [4 /*yield*/, browser.userAgent()];
-            case 6:
-                _d.apply(_c, [_e.sent()]);
+            case 5:
+                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+                _b.apply(_a, [_c.sent()]);
                 //setTimeout(async () => {
                 //googleLogin();
                 /* await page.waitForSelector('a[title="Accedi"]');
@@ -124,8 +127,31 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
         }
     });
 }); };
+var screenshotView = function () {
+    var screenshotInterval;
+    clearInterval(screenshotInterval);
+    screenshotInterval = setInterval(function () { return __awaiter(void 0, void 0, void 0, function () {
+        var error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, page.screenshot({ path: "./screen.jpg" })];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    console.log(error_1);
+                    screenshotView();
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); }, 500);
+};
 var googleLogin = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_1;
+    var error_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -164,27 +190,33 @@ var googleLogin = function () { return __awaiter(void 0, void 0, void 0, functio
                 }); }, 5000);
                 return [3 /*break*/, 6];
             case 5:
-                error_1 = _a.sent();
-                console.log(error_1);
+                error_2 = _a.sent();
+                console.log(error_2);
                 return [3 /*break*/, 6];
             case 6: return [2 /*return*/];
         }
     });
 }); };
 var randomEvent = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_2;
+    var clickSelector, randomArray, error_3;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 4, , 5]);
                 console.log("RANDOM EVENT");
-                return [4 /*yield*/, page.goto("https://www.zalando.it/uomo-home")];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/" + (Math.random() > 0.5 ? "uomo" : "donna") + "-home")];
             case 1:
                 _a.sent();
+                clickSelector = "li";
+                randomArray = Array.from(Array(Math.floor(Math.random() * 5)));
+                console.log(randomArray);
+                clickSelector = randomArray.reduce(function (acc, _) { return acc.concat(" ~ li"); }, clickSelector);
+                clickSelector = clickSelector.concat(" article a");
+                console.log(clickSelector);
                 return [4 /*yield*/, page.waitForSelector("article")];
             case 2:
                 _a.sent();
-                return [4 /*yield*/, page.click("article a")];
+                return [4 /*yield*/, page.click("" + clickSelector)];
             case 3:
                 _a.sent();
                 setTimeout(function () {
@@ -192,8 +224,8 @@ var randomEvent = function () { return __awaiter(void 0, void 0, void 0, functio
                 }, 4000);
                 return [3 /*break*/, 5];
             case 4:
-                error_2 = _a.sent();
-                console.log(error_2);
+                error_3 = _a.sent();
+                console.log(error_3);
                 randomEvent();
                 return [3 /*break*/, 5];
             case 5: return [2 /*return*/];
@@ -201,7 +233,7 @@ var randomEvent = function () { return __awaiter(void 0, void 0, void 0, functio
     });
 }); };
 var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var USERNAME_1, PASSWORD, typeTimeout, error_3;
+    var USERNAME_1, PASSWORD, typeTimeout, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -257,15 +289,15 @@ var zalandoLogin = function () { return __awaiter(void 0, void 0, void 0, functi
                 }); }, typeTimeout + 2000);
                 return [3 /*break*/, 4];
             case 3:
-                error_3 = _a.sent();
-                console.log(error_3);
+                error_4 = _a.sent();
+                console.log(error_4);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
     });
 }); };
 var checkProduct = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var productsCheck, cleanProducts, buyButtonValue, _a, error_4;
+    var productsCheck, cleanProducts, buyButtonValue, _a, error_5;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -328,16 +360,16 @@ var checkProduct = function () { return __awaiter(void 0, void 0, void 0, functi
                 _b.label = 13;
             case 13: return [3 /*break*/, 15];
             case 14:
-                error_4 = _b.sent();
+                error_5 = _b.sent();
                 checkProduct();
-                console.log(error_4);
+                console.log(error_5);
                 return [3 /*break*/, 15];
             case 15: return [2 /*return*/];
         }
     });
 }); };
 var goToCart = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_5;
+    var error_6;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -347,8 +379,8 @@ var goToCart = function () { return __awaiter(void 0, void 0, void 0, function (
                 _a.sent();
                 return [3 /*break*/, 3];
             case 2:
-                error_5 = _a.sent();
-                console.log(error_5);
+                error_6 = _a.sent();
+                console.log(error_6);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -356,7 +388,7 @@ var goToCart = function () { return __awaiter(void 0, void 0, void 0, function (
 }); };
 //CHECK PAYMENT ON CONFIRM
 var checkPaymentOnConfirm = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var result, paymentMethodId, textContent, cardNumberLast4, error_6;
+    var result, paymentMethodId, textContent, cardNumberLast4, error_7;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -391,9 +423,9 @@ var checkPaymentOnConfirm = function () { return __awaiter(void 0, void 0, void 
                 _a.label = 6;
             case 6: return [3 /*break*/, 8];
             case 7:
-                error_6 = _a.sent();
+                error_7 = _a.sent();
                 buy();
-                console.log("checkPaymentOnConfirm ERROR: ", error_6);
+                console.log("checkPaymentOnConfirm ERROR: ", error_7);
                 return [3 /*break*/, 8];
             case 8: return [2 /*return*/];
         }
@@ -401,7 +433,7 @@ var checkPaymentOnConfirm = function () { return __awaiter(void 0, void 0, void 
 }); };
 //SELECT CREDIT CARD ON PAYMENT
 var selectCreditCardOnPayment = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, error_7;
+    var _a, error_8;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -436,9 +468,9 @@ var selectCreditCardOnPayment = function () { return __awaiter(void 0, void 0, v
                 return [3 /*break*/, 8];
             case 8: return [3 /*break*/, 10];
             case 9:
-                error_7 = _b.sent();
+                error_8 = _b.sent();
                 checkPaymentOnConfirm();
-                console.log("selectCreditCardOnPayment ERROR: ", error_7);
+                console.log("selectCreditCardOnPayment ERROR: ", error_8);
                 return [3 /*break*/, 10];
             case 10: return [2 /*return*/];
         }
@@ -446,7 +478,7 @@ var selectCreditCardOnPayment = function () { return __awaiter(void 0, void 0, v
 }); };
 //ADD NEW CREDIT CARD
 var addNewCreditCard = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_8;
+    var error_9;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -468,15 +500,15 @@ var addNewCreditCard = function () { return __awaiter(void 0, void 0, void 0, fu
                 _a.sent();
                 return [3 /*break*/, 7];
             case 6:
-                error_8 = _a.sent();
-                console.log("addNewCreditCard ERROR: ", error_8);
+                error_9 = _a.sent();
+                console.log("addNewCreditCard ERROR: ", error_9);
                 return [3 /*break*/, 7];
             case 7: return [2 /*return*/];
         }
     });
 }); };
 var buy = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_9, error_10;
+    var error_10, error_11;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -516,8 +548,8 @@ var buy = function () { return __awaiter(void 0, void 0, void 0, function () {
                 buy();
                 return [3 /*break*/, 14];
             case 11:
-                error_9 = _a.sent();
-                console.log("ADDRESS ERROR", error_9);
+                error_10 = _a.sent();
+                console.log("ADDRESS ERROR", error_10);
                 return [4 /*yield*/, page.waitForSelector('button[data-id*="proceedToPayment"]')];
             case 12:
                 _a.sent();
@@ -534,9 +566,9 @@ var buy = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _a.label = 16;
             case 16: return [3 /*break*/, 18];
             case 17:
-                error_10 = _a.sent();
+                error_11 = _a.sent();
                 buy();
-                console.log("BUY ERROR: ", error_10);
+                console.log("BUY ERROR: ", error_11);
                 return [3 /*break*/, 18];
             case 18: return [2 /*return*/];
         }

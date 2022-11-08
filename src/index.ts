@@ -48,23 +48,24 @@ const initialisePuppeteer = async () => {
   const { webSocketDebuggerUrl } = response.data; */
 
   const browser = await puppeteer.launch({
-    ignoreDefaultArgs: ["--enable-automation"],
-    args: [
-      "--disable-blink-features=AutomationControlled",
-      "--disable-web-security",
-    ],
-    //headless: false,
+    //ignoreDefaultArgs: ["--enable-automation"],
+    //args: ["--disable-blink-features=AutomationControlled"],
+    headless: false,
     product: "chrome",
     executablePath: executablePath(),
   });
-
-  console.log(await browser.userAgent());
 
   /* const browser = await puppeteer.connect({
     browserWSEndpoint: webSocketDebuggerUrl,
   }); */
 
   page = (await browser.pages())[0];
+
+  //screenshotView();
+
+  /* await page.setExtraHTTPHeaders({
+    "Accept-Language": "en-US,en;q=0.9",
+  }); */
 
   /* const client = await page.target().createCDPSession();
   await client.send("Network.clearBrowserCookies");
@@ -74,6 +75,8 @@ const initialisePuppeteer = async () => {
     //"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
   );
+
+  //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
 
   console.log(await browser.userAgent());
 
@@ -98,6 +101,21 @@ const initialisePuppeteer = async () => {
     await page.type('input[id="login.secret"]', PASSWORD); */
   //}, 4000);
   //checkProduct();
+};
+
+const screenshotView = () => {
+  let screenshotInterval;
+
+  clearInterval(screenshotInterval);
+
+  screenshotInterval = setInterval(async () => {
+    try {
+      await page.screenshot({ path: "./screen.jpg" });
+    } catch (error) {
+      console.log(error);
+      screenshotView();
+    }
+  }, 500);
 };
 
 const googleLogin = async () => {
@@ -128,10 +146,27 @@ const randomEvent = async () => {
   try {
     console.log("RANDOM EVENT");
 
-    await page.goto("https://www.zalando.it/uomo-home");
+    await page.goto(
+      `https://www.zalando.it/${Math.random() > 0.5 ? "uomo" : "donna"}-home`
+    );
+
+    let clickSelector = "li";
+
+    const randomArray = Array.from(Array(Math.floor(Math.random() * 5)));
+
+    console.log(randomArray);
+
+    clickSelector = randomArray.reduce(
+      (acc, _) => acc.concat(" ~ li"),
+      clickSelector
+    );
+
+    clickSelector = clickSelector.concat(" article a");
+
+    console.log(clickSelector);
 
     await page.waitForSelector("article");
-    await page.click("article a");
+    await page.click(`${clickSelector}`);
 
     setTimeout(() => {
       zalandoLogin();
