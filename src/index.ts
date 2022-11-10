@@ -53,7 +53,10 @@ const initialisePuppeteer = async () => {
     const browser = await puppeteer.launch({
       //ignoreDefaultArgs: ["--enable-automation"],
       //args: ["--disable-blink-features=AutomationControlled"],
-      headless: false,
+      args: [
+        '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
+      ],
+      //headless: false,
       product: "chrome",
       executablePath: executablePath(),
     });
@@ -74,10 +77,10 @@ const initialisePuppeteer = async () => {
   await client.send("Network.clearBrowserCookies");
   await client.send("Network.clearBrowserCache"); */
 
-    await page.setUserAgent(
+   /*  await page.setUserAgent(
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
       //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    );
+    ); */
 
     //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
 
@@ -99,6 +102,7 @@ const initialisePuppeteer = async () => {
     //await page.click("article a");
 
     randomEvent(page);
+    screenshotView(page);
   } catch (error) {
     console.log(error);
   }
@@ -114,7 +118,7 @@ const screenshotView = (page: any) => {
 
   clearInterval(screenshotInterval);
 
-  screenshotInterval = setInterval(async (page: any) => {
+  screenshotInterval = setInterval(async () => {
     try {
       await page.screenshot({ path: "./screen.jpg" });
     } catch (error) {
@@ -209,8 +213,7 @@ const zalandoLogin = async (page: any) => {
 
     Array.from(PASSWORD).map((letter, i) =>
       setTimeout(
-        async () =>
-          await page.type('input[id="login.secret"]', letter),
+        async () => await page.type('input[id="login.secret"]', letter),
         Array.from(USERNAME).length * 100 + i * 100
       )
     );
@@ -432,7 +435,5 @@ const buy = async (page: any) => {
 };
 
 app.listen(port, () => {
-  initialisePuppeteer();
-
   initialisePuppeteer();
 });

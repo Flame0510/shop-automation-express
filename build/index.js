@@ -69,11 +69,14 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 5, , 6]);
+                _c.trys.push([0, 4, , 5]);
                 return [4 /*yield*/, puppeteer_extra_1.default.launch({
                         //ignoreDefaultArgs: ["--enable-automation"],
                         //args: ["--disable-blink-features=AutomationControlled"],
-                        headless: false,
+                        args: [
+                            '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
+                        ],
+                        //headless: false,
                         product: "chrome",
                         executablePath: (0, puppeteer_1.executablePath)(),
                     })];
@@ -89,9 +92,13 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
                 /* const client = await page.target().createCDPSession();
               await client.send("Network.clearBrowserCookies");
               await client.send("Network.clearBrowserCache"); */
-                return [4 /*yield*/, page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-                    //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-                    )];
+                /*  await page.setUserAgent(
+                   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+                   //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+                 ); */
+                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+                _b = (_a = console).log;
+                return [4 /*yield*/, browser.userAgent()];
             case 3:
                 //screenshotView();
                 /* await page.setExtraHTTPHeaders({
@@ -100,11 +107,10 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
                 /* const client = await page.target().createCDPSession();
               await client.send("Network.clearBrowserCookies");
               await client.send("Network.clearBrowserCache"); */
-                _c.sent();
-                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
-                _b = (_a = console).log;
-                return [4 /*yield*/, browser.userAgent()];
-            case 4:
+                /*  await page.setUserAgent(
+                   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+                   //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+                 ); */
                 //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
                 _b.apply(_a, [_c.sent()]);
                 //setTimeout(async (page:any) => {
@@ -121,19 +127,20 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
               await page.waitForSelector("article"); */
                 //await page.click("article a");
                 randomEvent(page);
-                return [3 /*break*/, 6];
-            case 5:
+                screenshotView(page);
+                return [3 /*break*/, 5];
+            case 4:
                 error_1 = _c.sent();
                 console.log(error_1);
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
+                return [3 /*break*/, 5];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
 var screenshotView = function (page) {
     var screenshotInterval;
     clearInterval(screenshotInterval);
-    screenshotInterval = setInterval(function (page) { return __awaiter(void 0, void 0, void 0, function () {
+    screenshotInterval = setInterval(function () { return __awaiter(void 0, void 0, void 0, function () {
         var error_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -578,6 +585,5 @@ var buy = function (page) { return __awaiter(void 0, void 0, void 0, function ()
     });
 }); };
 app.listen(port, function () {
-    initialisePuppeteer();
     initialisePuppeteer();
 });
