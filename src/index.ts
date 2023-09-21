@@ -24,7 +24,7 @@ const chromeConfig = {
 
 let times = 0;
 
-const size = "50.5";
+const size = "41";
 
 const cardNumber = "4502144331007303";
 const cardExp = "1223";
@@ -38,17 +38,17 @@ const initialisePuppeteer = async () => {
   try {
     //await chromeLauncher.killAll();
 
-    /* const chrome = await chromeLauncher.launch({
-    startingUrl: "https://www.zalando.it",
-    //userDataDir: false,
-    //chromeFlags: ["--headless", "--disable-gpu"],
-  });
+    /*const chrome = await chromeLauncher.launch({
+      startingUrl: "https://www.zalando.it",
+      //userDataDir: false,
+      //chromeFlags: ["--headless", "--disable-gpu"],
+    });
 
-  const response = await axios.get(
-    `http://localhost:${chrome.port}/json/version`
-  );
+    const response = await axios.get(
+      `http://localhost:${chrome.port}/json/version`
+    );
 
-  const { webSocketDebuggerUrl } = response.data; */
+    const { webSocketDebuggerUrl } = response.data;*/
 
     const browser = await puppeteer.launch({
       //ignoreDefaultArgs: ["--enable-automation"],
@@ -56,14 +56,16 @@ const initialisePuppeteer = async () => {
       args: [
         '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
       ],
-      //headless: false,
+      headless: false,
       product: "chrome",
       executablePath: executablePath(),
     });
 
+    //const page = browser.newPage();
+
     /* const browser = await puppeteer.connect({
-    browserWSEndpoint: webSocketDebuggerUrl,
-  }); */
+      browserWSEndpoint: webSocketDebuggerUrl,
+    }); */
 
     const page = (await browser.pages())[0];
 
@@ -77,7 +79,7 @@ const initialisePuppeteer = async () => {
   await client.send("Network.clearBrowserCookies");
   await client.send("Network.clearBrowserCache"); */
 
-   /*  await page.setUserAgent(
+    /*  await page.setUserAgent(
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
       //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
     ); */
@@ -238,7 +240,7 @@ const checkProduct = async (page: any) => {
     console.log("CHECK PRODUCT");
 
     await page.goto(
-      "https://www.zalando.it/jordan-air-1-zoom-comfort-sneakers-alte-dark-iriswhiteblacksail-joc12n01f-i11.html"
+      "https://www.zalando.it/jordan-air-jordan-1-zoom-air-comfort-sneakers-alte-white-onyxcardinal-redblacklight-currywhite-joc12n01f-h11.html"
     );
 
     await page.waitForSelector("#picker-trigger");
@@ -282,7 +284,8 @@ const checkProduct = async (page: any) => {
       buyButtonValue === "Aggiungi al carrello" &&
         (await page.goto("https://www.zalando.it/cart/"));
 
-      await page.waitForNavigation();
+      await page.waitForSelector('button[class*="__button-checkout"]');
+      await page.click('button[class*="__button-checkout"]');
 
       buy(page);
     } else {

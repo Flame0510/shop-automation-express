@@ -57,7 +57,7 @@ var chromeConfig = {
     chromePath: "/usr/bin/google-chrome-stable",
 };
 var times = 0;
-var size = "50.5";
+var size = "41";
 var cardNumber = "4502144331007303";
 var cardExp = "1223";
 var cardCVV = "192";
@@ -76,7 +76,7 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
                         args: [
                             '--user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
                         ],
-                        //headless: false,
+                        headless: false,
                         product: "chrome",
                         executablePath: (0, puppeteer_1.executablePath)(),
                     })];
@@ -93,9 +93,9 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
               await client.send("Network.clearBrowserCookies");
               await client.send("Network.clearBrowserCache"); */
                 /*  await page.setUserAgent(
-                   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-                   //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-                 ); */
+                  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+                  //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+                ); */
                 //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
                 _b = (_a = console).log;
                 return [4 /*yield*/, browser.userAgent()];
@@ -108,9 +108,9 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
               await client.send("Network.clearBrowserCookies");
               await client.send("Network.clearBrowserCache"); */
                 /*  await page.setUserAgent(
-                   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-                   //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-                 ); */
+                  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+                  //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+                ); */
                 //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
                 _b.apply(_a, [_c.sent()]);
                 //setTimeout(async (page:any) => {
@@ -214,7 +214,7 @@ var randomEvent = function (page) { return __awaiter(void 0, void 0, void 0, fun
             case 0:
                 _a.trys.push([0, 4, , 5]);
                 console.log("RANDOM EVENT");
-                return [4 /*yield*/, page.goto("https://www.zalando.it/".concat(Math.random() > 0.5 ? "uomo" : "donna", "-home"))];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/" + (Math.random() > 0.5 ? "uomo" : "donna") + "-home")];
             case 1:
                 _a.sent();
                 clickSelector = "li";
@@ -226,7 +226,7 @@ var randomEvent = function (page) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, page.waitForSelector("article")];
             case 2:
                 _a.sent();
-                return [4 /*yield*/, page.click("".concat(clickSelector))];
+                return [4 /*yield*/, page.click("" + clickSelector)];
             case 3:
                 _a.sent();
                 setTimeout(function () {
@@ -313,7 +313,7 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
             case 0:
                 _b.trys.push([0, 14, , 15]);
                 console.log("CHECK PRODUCT");
-                return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-1-zoom-comfort-sneakers-alte-dark-iriswhiteblacksail-joc12n01f-i11.html")];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-jordan-1-zoom-air-comfort-sneakers-alte-white-onyxcardinal-redblacklight-currywhite-joc12n01f-h11.html")];
             case 1:
                 _b.sent();
                 return [4 /*yield*/, page.waitForSelector("#picker-trigger")];
@@ -345,7 +345,7 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
             case 6:
                 buyButtonValue = _b.sent();
                 console.warn("BUY BUTTON VALUE: ", buyButtonValue);
-                return [4 /*yield*/, page.click("label[for=\"".concat(cleanProducts[0], "\"]"))];
+                return [4 /*yield*/, page.click("label[for=\"" + cleanProducts[0] + "\"]")];
             case 7:
                 _b.sent();
                 return [4 /*yield*/, page.click('div[data-testid="pdp-add-to-cart"] button')];
@@ -359,8 +359,10 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
                 _b.label = 10;
             case 10:
                 _a;
-                return [4 /*yield*/, page.waitForNavigation()];
+                //await page.waitForNavigation();
+                return [4 /*yield*/, page.click('button[class*="__button-checkout"]')];
             case 11:
+                //await page.waitForNavigation();
                 _b.sent();
                 buy(page);
                 return [3 /*break*/, 13];
