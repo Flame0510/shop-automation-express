@@ -45,6 +45,7 @@ var puppeteer_extra_1 = __importDefault(require("puppeteer-extra"));
 var puppeteer_extra_plugin_stealth_1 = __importDefault(require("puppeteer-extra-plugin-stealth"));
 //import chromeLauncher from "chrome-launcher";
 var puppeteer_1 = require("puppeteer");
+var _a = require("./config.json"), email = _a.email, password = _a.password, product_url = _a.product_url, sneaker_size = _a.sneaker_size;
 puppeteer_extra_1.default.use((0, puppeteer_extra_plugin_stealth_1.default)());
 var chromeLauncher = require("chrome-launcher");
 /* const Xvfb = require("xvfb");
@@ -57,7 +58,7 @@ var chromeConfig = {
     chromePath: "/usr/bin/google-chrome-stable",
 };
 var times = 0;
-var size = "41";
+var size = sneaker_size;
 var cardNumber = "4502144331007303";
 var cardExp = "1223";
 var cardCVV = "192";
@@ -169,7 +170,7 @@ var googleLogin = function (page) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, page.goto("https://accounts.google.com/ServiceLogin?hl=it&amp;passive=true&amp;continue=https://www.google.it/&amp;ec=GAZAmgQ")];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, page.type('input[type="email"]', "micheletornello10@gmail.com")];
+                return [4 /*yield*/, page.type('input[type="email"]', email)];
             case 2:
                 _a.sent();
                 return [4 /*yield*/, page.keyboard.press("Enter")];
@@ -183,7 +184,7 @@ var googleLogin = function (page) { return __awaiter(void 0, void 0, void 0, fun
                         switch (_a.label) {
                             case 0: 
                             //await page.waitForSelector('input[type="password"]');
-                            return [4 /*yield*/, page.type('input[type="password"]', "Mm5102001")];
+                            return [4 /*yield*/, page.type('input[type="password"]', password)];
                             case 1:
                                 //await page.waitForSelector('input[type="password"]');
                                 _a.sent();
@@ -214,7 +215,7 @@ var randomEvent = function (page) { return __awaiter(void 0, void 0, void 0, fun
             case 0:
                 _a.trys.push([0, 4, , 5]);
                 console.log("RANDOM EVENT");
-                return [4 /*yield*/, page.goto("https://www.zalando.it/" + (Math.random() > 0.5 ? "uomo" : "donna") + "-home")];
+                return [4 /*yield*/, page.goto("https://www.zalando.it/".concat(Math.random() > 0.5 ? "uomo" : "donna", "-home"))];
             case 1:
                 _a.sent();
                 clickSelector = "li";
@@ -226,7 +227,7 @@ var randomEvent = function (page) { return __awaiter(void 0, void 0, void 0, fun
                 return [4 /*yield*/, page.waitForSelector("article")];
             case 2:
                 _a.sent();
-                return [4 /*yield*/, page.click("" + clickSelector)];
+                return [4 /*yield*/, page.click("".concat(clickSelector))];
             case 3:
                 _a.sent();
                 setTimeout(function () {
@@ -252,8 +253,8 @@ var zalandoLogin = function (page) { return __awaiter(void 0, void 0, void 0, fu
                 return [4 /*yield*/, page.goto("https://www.zalando.it/myaccount")];
             case 1:
                 _a.sent();
-                USERNAME_1 = "micheletornello5@gmail.com";
-                PASSWORD = "zMm5102001";
+                USERNAME_1 = email;
+                PASSWORD = password;
                 return [4 /*yield*/, page.waitForSelector('input[id="login.email"]')];
             case 2:
                 _a.sent();
@@ -311,9 +312,9 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _b.trys.push([0, 14, , 15]);
+                _b.trys.push([0, 15, , 16]);
                 console.log("CHECK PRODUCT");
-                return [4 /*yield*/, page.goto("https://www.zalando.it/jordan-air-jordan-1-zoom-air-comfort-sneakers-alte-white-onyxcardinal-redblacklight-currywhite-joc12n01f-h11.html")];
+                return [4 /*yield*/, page.goto(product_url)];
             case 1:
                 _b.sent();
                 return [4 /*yield*/, page.waitForSelector("#picker-trigger")];
@@ -340,12 +341,12 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
                 })
                     .flat();
                 console.log("CLEAN PRODUCTS: ", cleanProducts);
-                if (!cleanProducts.length) return [3 /*break*/, 12];
+                if (!cleanProducts.length) return [3 /*break*/, 13];
                 return [4 /*yield*/, page.$eval('div[data-testid="pdp-add-to-cart"] button span', function (span) { return span.textContent; })];
             case 6:
                 buyButtonValue = _b.sent();
                 console.warn("BUY BUTTON VALUE: ", buyButtonValue);
-                return [4 /*yield*/, page.click("label[for=\"" + cleanProducts[0] + "\"]")];
+                return [4 /*yield*/, page.click("label[for=\"".concat(cleanProducts[0], "\"]"))];
             case 7:
                 _b.sent();
                 return [4 /*yield*/, page.click('div[data-testid="pdp-add-to-cart"] button')];
@@ -359,24 +360,25 @@ var checkProduct = function (page) { return __awaiter(void 0, void 0, void 0, fu
                 _b.label = 10;
             case 10:
                 _a;
-                //await page.waitForNavigation();
-                return [4 /*yield*/, page.click('button[class*="__button-checkout"]')];
+                return [4 /*yield*/, page.waitForSelector('button[class*="__button-checkout"]')];
             case 11:
-                //await page.waitForNavigation();
+                _b.sent();
+                return [4 /*yield*/, page.click('button[class*="__button-checkout"]')];
+            case 12:
                 _b.sent();
                 buy(page);
-                return [3 /*break*/, 13];
-            case 12:
+                return [3 /*break*/, 14];
+            case 13:
                 console.log("NOT FOUND - Reload");
                 checkProduct(page);
-                _b.label = 13;
-            case 13: return [3 /*break*/, 15];
-            case 14:
+                _b.label = 14;
+            case 14: return [3 /*break*/, 16];
+            case 15:
                 error_6 = _b.sent();
                 checkProduct(page);
                 console.log(error_6);
-                return [3 /*break*/, 15];
-            case 15: return [2 /*return*/];
+                return [3 /*break*/, 16];
+            case 16: return [2 /*return*/];
         }
     });
 }); };

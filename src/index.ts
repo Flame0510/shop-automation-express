@@ -7,6 +7,8 @@ import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { executablePath } from "puppeteer";
 import axios from "axios";
 
+const { email, password, product_url, sneaker_size } = require("./config.json");
+
 puppeteer.use(StealthPlugin());
 
 const chromeLauncher = require("chrome-launcher");
@@ -24,7 +26,7 @@ const chromeConfig = {
 
 let times = 0;
 
-const size = "41";
+const size = sneaker_size;
 
 const cardNumber = "4502144331007303";
 const cardExp = "1223";
@@ -135,14 +137,14 @@ const googleLogin = async (page: any) => {
     await page.goto(
       "https://accounts.google.com/ServiceLogin?hl=it&amp;passive=true&amp;continue=https://www.google.it/&amp;ec=GAZAmgQ"
     );
-    await page.type('input[type="email"]', "micheletornello10@gmail.com");
+    await page.type('input[type="email"]', email);
     await page.keyboard.press("Enter");
 
     await page.waitForNavigation();
 
     setTimeout(async (page: any) => {
       //await page.waitForSelector('input[type="password"]');
-      await page.type('input[type="password"]', "Mm5102001");
+      await page.type('input[type="password"]', password);
 
       await page.click('button[data-testid="login_button"]');
 
@@ -196,8 +198,8 @@ const zalandoLogin = async (page: any) => {
 
     await page.goto("https://www.zalando.it/myaccount");
 
-    const USERNAME = "micheletornello5@gmail.com";
-    const PASSWORD = "zMm5102001";
+    const USERNAME = email;
+    const PASSWORD = password;
 
     await page.waitForSelector('input[id="login.email"]');
     //await page.type('input[id="login.email"]', USERNAME);
@@ -239,9 +241,7 @@ const checkProduct = async (page: any) => {
   try {
     console.log("CHECK PRODUCT");
 
-    await page.goto(
-      "https://www.zalando.it/jordan-air-jordan-1-zoom-air-comfort-sneakers-alte-white-onyxcardinal-redblacklight-currywhite-joc12n01f-h11.html"
-    );
+    await page.goto(product_url);
 
     await page.waitForSelector("#picker-trigger");
     await page.click("#picker-trigger");
