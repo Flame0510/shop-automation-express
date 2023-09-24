@@ -39,7 +39,6 @@ app.get("/", (req, res) => {
 const initialisePuppeteer = async () => {
   try {
     //await chromeLauncher.killAll();
-
     /*const chrome = await chromeLauncher.launch({
       startingUrl: "https://www.zalando.it",
       //userDataDir: false,
@@ -51,7 +50,48 @@ const initialisePuppeteer = async () => {
     );
 
     const { webSocketDebuggerUrl } = response.data;*/
+    //const page = browser.newPage();
+    /* const browser = await puppeteer.connect({
+      browserWSEndpoint: webSocketDebuggerUrl,
+    }); */
+    //screenshotView();
+    /* await page.setExtraHTTPHeaders({
+    "Accept-Language": "en-US,en;q=0.9",
+  }); */
+    /* const client = await page.target().createCDPSession();
+  await client.send("Network.clearBrowserCookies");
+  await client.send("Network.clearBrowserCache"); */
+    /*  await page.setUserAgent(
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+      //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+    ); */
+    //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+    //setTimeout(async (page:any) => {
+    //googleLogin();
+    /* await page.waitForSelector('a[title="Accedi"]');
+  await page.click('a[title="Accedi"]');
+  await page.goto("https://www.zalando.it");
+  await page.waitForSelector('a[title="Accedi"]'); */
+    /* await page.goto("https://www.zalando.it/" + new Date().getTime());
+  await page.goto(
+    "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
+  );
+  await page.goto("https://www.zalando.it");
+  await page.waitForSelector("article"); */
+    //await page.click("article a");
+    runBot();
+  } catch (error) {
+    console.log(error);
+  }
 
+  /* await page.type('input[id="login.email"]', USERNAME);
+    await page.type('input[id="login.secret"]', PASSWORD); */
+  //}, 4000);
+  //checkProduct();
+};
+
+const runBot = async () => {
+  try {
     const browser = await puppeteer.launch({
       //ignoreDefaultArgs: ["--enable-automation"],
       //args: ["--disable-blink-features=AutomationControlled"],
@@ -63,58 +103,14 @@ const initialisePuppeteer = async () => {
       executablePath: executablePath(),
     });
 
-    //const page = browser.newPage();
-
-    /* const browser = await puppeteer.connect({
-      browserWSEndpoint: webSocketDebuggerUrl,
-    }); */
-
-    const page = (await browser.pages())[0];
-
-    //screenshotView();
-
-    /* await page.setExtraHTTPHeaders({
-    "Accept-Language": "en-US,en;q=0.9",
-  }); */
-
-    /* const client = await page.target().createCDPSession();
-  await client.send("Network.clearBrowserCookies");
-  await client.send("Network.clearBrowserCache"); */
-
-    /*  await page.setUserAgent(
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-      //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-    ); */
-
-    //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
-
     console.log(await browser.userAgent());
 
-    //setTimeout(async (page:any) => {
-    //googleLogin();
-    /* await page.waitForSelector('a[title="Accedi"]');
-  await page.click('a[title="Accedi"]');
-  await page.goto("https://www.zalando.it");
-  await page.waitForSelector('a[title="Accedi"]'); */
-
-    /* await page.goto("https://www.zalando.it/" + new Date().getTime());
-  await page.goto(
-    "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
-  );
-  await page.goto("https://www.zalando.it");
-  await page.waitForSelector("article"); */
-    //await page.click("article a");
-
+    const page = (await browser.pages())[0];
     randomEvent(page);
     screenshotView(page);
   } catch (error) {
     console.log(error);
   }
-
-  /* await page.type('input[id="login.email"]', USERNAME);
-    await page.type('input[id="login.secret"]', PASSWORD); */
-  //}, 4000);
-  //checkProduct();
 };
 
 const screenshotView = (page: any) => {

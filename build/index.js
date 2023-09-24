@@ -66,7 +66,59 @@ app.get("/", function (req, res) {
     initialisePuppeteer();
 });
 var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var browser, page, _a, _b, error_1;
+    return __generator(this, function (_a) {
+        try {
+            //await chromeLauncher.killAll();
+            /*const chrome = await chromeLauncher.launch({
+              startingUrl: "https://www.zalando.it",
+              //userDataDir: false,
+              //chromeFlags: ["--headless", "--disable-gpu"],
+            });
+        
+            const response = await axios.get(
+              `http://localhost:${chrome.port}/json/version`
+            );
+        
+            const { webSocketDebuggerUrl } = response.data;*/
+            //const page = browser.newPage();
+            /* const browser = await puppeteer.connect({
+              browserWSEndpoint: webSocketDebuggerUrl,
+            }); */
+            //screenshotView();
+            /* await page.setExtraHTTPHeaders({
+            "Accept-Language": "en-US,en;q=0.9",
+          }); */
+            /* const client = await page.target().createCDPSession();
+          await client.send("Network.clearBrowserCookies");
+          await client.send("Network.clearBrowserCache"); */
+            /*  await page.setUserAgent(
+              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+              //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+            ); */
+            //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+            //setTimeout(async (page:any) => {
+            //googleLogin();
+            /* await page.waitForSelector('a[title="Accedi"]');
+          await page.click('a[title="Accedi"]');
+          await page.goto("https://www.zalando.it");
+          await page.waitForSelector('a[title="Accedi"]'); */
+            /* await page.goto("https://www.zalando.it/" + new Date().getTime());
+          await page.goto(
+            "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
+          );
+          await page.goto("https://www.zalando.it");
+          await page.waitForSelector("article"); */
+            //await page.click("article a");
+            runBot();
+        }
+        catch (error) {
+            console.log(error);
+        }
+        return [2 /*return*/];
+    });
+}); };
+var runBot = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var browser, _a, _b, page, error_1;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -83,50 +135,13 @@ var initialisePuppeteer = function () { return __awaiter(void 0, void 0, void 0,
                     })];
             case 1:
                 browser = _c.sent();
-                return [4 /*yield*/, browser.pages()];
-            case 2:
-                page = (_c.sent())[0];
-                //screenshotView();
-                /* await page.setExtraHTTPHeaders({
-                "Accept-Language": "en-US,en;q=0.9",
-              }); */
-                /* const client = await page.target().createCDPSession();
-              await client.send("Network.clearBrowserCookies");
-              await client.send("Network.clearBrowserCache"); */
-                /*  await page.setUserAgent(
-                  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-                  //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-                ); */
-                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
                 _b = (_a = console).log;
                 return [4 /*yield*/, browser.userAgent()];
-            case 3:
-                //screenshotView();
-                /* await page.setExtraHTTPHeaders({
-                "Accept-Language": "en-US,en;q=0.9",
-              }); */
-                /* const client = await page.target().createCDPSession();
-              await client.send("Network.clearBrowserCookies");
-              await client.send("Network.clearBrowserCache"); */
-                /*  await page.setUserAgent(
-                  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
-                  //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-                ); */
-                //await page.goto("https://arh.antoinevastel.com/bots/areyouheadless");
+            case 2:
                 _b.apply(_a, [_c.sent()]);
-                //setTimeout(async (page:any) => {
-                //googleLogin();
-                /* await page.waitForSelector('a[title="Accedi"]');
-              await page.click('a[title="Accedi"]');
-              await page.goto("https://www.zalando.it");
-              await page.waitForSelector('a[title="Accedi"]'); */
-                /* await page.goto("https://www.zalando.it/" + new Date().getTime());
-              await page.goto(
-                "https://www.zalando.it/jordan-air-1-mid-se-sneakers-alte-blackinfraredwhitesail-joc12n023-q11.html"
-              );
-              await page.goto("https://www.zalando.it");
-              await page.waitForSelector("article"); */
-                //await page.click("article a");
+                return [4 /*yield*/, browser.pages()];
+            case 3:
+                page = (_c.sent())[0];
                 randomEvent(page);
                 screenshotView(page);
                 return [3 /*break*/, 5];
